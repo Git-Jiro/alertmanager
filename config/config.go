@@ -476,11 +476,12 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 			if !strings.HasSuffix(voc.APIURL.Path, "/") {
 				voc.APIURL.Path += "/"
 			}
-			if voc.APIKey == "" {
-				if c.Global.VictorOpsAPIKey == "" {
-					return fmt.Errorf("no global VictorOps API Key set")
+			if voc.APIKey == "" && len(voc.APIKeyFile) == 0 {
+				if c.Global.VictorOpsAPIKey == "" && len(c.Global.VictorOpsAPIKeyFile) == 0 {
+					return fmt.Errorf("no global VictorOps API Key set either inline or in a file")
 				}
 				voc.APIKey = c.Global.VictorOpsAPIKey
+				voc.APIKeyFile = Secret(c.Global.VictorOpsAPIKeyFile)
 			}
 		}
 		for _, sns := range rcv.SNSConfigs {
@@ -718,6 +719,7 @@ type GlobalConfig struct {
 	WeChatAPICorpID      string     `yaml:"wechat_api_corp_id,omitempty" json:"wechat_api_corp_id,omitempty"`
 	VictorOpsAPIURL      *URL       `yaml:"victorops_api_url,omitempty" json:"victorops_api_url,omitempty"`
 	VictorOpsAPIKey      Secret     `yaml:"victorops_api_key,omitempty" json:"victorops_api_key,omitempty"`
+	VictorOpsAPIKeyFile  string     `yaml:"victorops_api_key_file,omitempty" json:"victorops_api_key_file,omitempty"`
 	TelegramAPIUrl       *URL       `yaml:"telegram_api_url,omitempty" json:"telegram_api_url,omitempty"`
 }
 
